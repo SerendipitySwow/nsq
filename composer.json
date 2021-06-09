@@ -1,0 +1,44 @@
+{
+  "name": "/nsq",
+  "type": "library",
+  "minimum-stability": "dev",
+  "description": "Development of nsq client based on swow",
+  "keywords": [
+    "swow",
+    "coroutine",
+    "async",
+    "server",
+    "swoole",
+    "nsq",
+    "serendipity"
+  ],
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "codingheping",
+      "email": "847050412@qq.com"
+    }
+  ],
+  "require": {
+    "php":">=8.0",
+    "ext-sockets": "*",
+    "composer/semver": "^3.2",
+    "phpinnacle/buffer": "^1.2",
+    "psr/log": "^1.1",
+    "nsq/nsq": "^0.6.1"
+  },
+  "autoload": {
+    "psr-4": {
+      "SerendipitySwow\\Nsq\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "SerendipitySwowTest\\Nsq\\": "tests/"
+    }
+  },
+  "support": {
+    "pull-request": "https://github.com/SerendipitySwow/nsq-nsq/pulls",
+    "issues": "https://github.com/SerendipitySwow/nsq-nsq/issues"
+  }
+}
