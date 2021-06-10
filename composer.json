@@ -1,5 +1,5 @@
 {
-  "name": "/nsq",
+  "name": "swow/nsq",
   "type": "library",
   "minimum-stability": "dev",
   "description": "Development of nsq client based on swow",
@@ -22,10 +22,9 @@
   "require": {
     "php":">=8.0",
     "ext-sockets": "*",
-    "composer/semver": "^3.2",
-    "phpinnacle/buffer": "^1.2",
-    "psr/log": "^1.1",
-    "nsq/nsq": "^0.6.1"
+    "hyperf/nsq": "2.2.x-dev",
+    "lizhichao/one-nsq": "dev-master",
+    "hyperf/pool": "2.2.x-dev"
   },
   "autoload": {
     "psr-4": {
