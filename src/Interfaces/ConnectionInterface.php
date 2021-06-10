@@ -2,7 +2,7 @@
 
 declare(strict_types = 1);
 
-namespace SerendipitySwow\Nsq\Interface;
+namespace SerendipitySwow\Nsq\Interfaces;
 
 interface ConnectionInterface
 {

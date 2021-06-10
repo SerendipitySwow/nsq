@@ -10,7 +10,7 @@ use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 use SerendipitySwow\Nsq\Exceptions\ConnectionException;
 use SerendipitySwow\Nsq\Exceptions\SocketPopException;
-use SerendipitySwow\Nsq\Interface\ConnectionInterface;
+use SerendipitySwow\Nsq\Interfaces\ConnectionInterface;
 use SerendipitySwow\Socket\Exceptions\OpenStreamException;
 use SerendipitySwow\Socket\Exceptions\StreamStateException;
 use SerendipitySwow\Socket\Streams\Socket;
