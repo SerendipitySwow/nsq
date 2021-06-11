@@ -1,7 +1,6 @@
 {
   "name": "swow/nsq",
   "type": "library",
-  "minimum-stability": "dev",
   "description": "Development of nsq client based on swow",
   "keywords": [
     "swow",
