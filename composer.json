@@ -22,9 +22,7 @@
   "require": {
     "php":">=8.0",
     "ext-sockets": "*",
-    "hyperf/nsq": "2.2.x-dev",
-    "lizhichao/one-nsq": "dev-master",
-    "hyperf/pool": "2.2.x-dev"
+    "ext-bcmath": "*"
   },
   "autoload": {
     "psr-4": {

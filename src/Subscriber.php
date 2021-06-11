@@ -28,7 +28,7 @@ class Subscriber
     /**
      * @var string
      */
-    protected string $type;
+    protected string $type = '';
 
     /**
      * @var string
@@ -42,18 +42,21 @@ class Subscriber
 
     public function recv() : Subscriber
     {
-        $data       = $this->socket->readChar(8);
-        $this->size = (int)sprintf('%u', unpack('N', substr($data, 0, 4))[1]);
-        $this->type = sprintf('%u', unpack('N', substr($data, 4, 4))[1]);
-        $length     = $this->size - 4;
-        $data       = '';
-        while ($len = $length - strlen($data)) {
-            if ($len <= 0) {
-                break;
+        $data = $this->socket->readChar(8);
+        if ($data !== null) {
+            $this->size = (int)sprintf('%u', unpack('N', substr($data, 0, 4))[1]);
+            $this->type = sprintf('%u', unpack('N', substr($data, 4, 4))[1]);
+            $length     = $this->size - 4;
+            $data       = '';
+            while ($len = $length - strlen($data)) {
+                if ($len <= 0) {
+                    break;
+                }
+                $data .= $this->socket->readChar($len);
             }
-            $data .= $this->socket->readChar($len);
+            $this->payload = Packer::unpackString($data);
         }
-        $this->payload = Packer::unpackString($data);
+
         return $this;
     }
 

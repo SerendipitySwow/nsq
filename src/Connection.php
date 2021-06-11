@@ -8,14 +8,17 @@ use InvalidArgumentException;
 use JetBrains\PhpStorm\Pure;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
-use SerendipitySwow\Nsq\Exceptions\ConnectionException;
-use SerendipitySwow\Nsq\Exceptions\SocketPopException;
-use SerendipitySwow\Nsq\Interfaces\ConnectionInterface;
+use Serendipity\Job\Logger\Logger;
+use Serendipity\Job\Logger\LoggerFactory;
+use Serendipity\Job\Util\Arr;
+use SerendipitySwow\Nsq\Interface\ConnectionInterface;
 use SerendipitySwow\Socket\Exceptions\OpenStreamException;
 use SerendipitySwow\Socket\Exceptions\StreamStateException;
 use SerendipitySwow\Socket\Streams\Socket;
 use Swow\Channel;
 use Swow\Coroutine;
+use SerendipitySwow\Nsq\Exceptions\SocketPopException;
+use SerendipitySwow\Nsq\Exceptions\ConnectionException;
 
 class Connection implements ConnectionInterface
 {
@@ -53,13 +56,15 @@ class Connection implements ConnectionInterface
      */
     protected array $config = [];
 
-    protected LoggerInterface $logger;
+    protected Logger $logger;
 
     public function __construct(ContainerInterface $container, array $config = [])
     {
         $this->container = $container;
         $this->config    = $config ?? throw new InvalidArgumentException('Nsq Config is null#');
-        $this->logger    = $this->container->get(LoggerInterface::class) ?? throw new InvalidArgumentException('Logger is Unknow#');
+        $this->builder   = $container->get(MessageBuilder::class);
+        $this->logger    = $this->container->get(LoggerFactory::class)
+                                           ->get() ?? throw new InvalidArgumentException('Logger is Unknow#');
     }
 
     public function reconnect() : bool
@@ -181,12 +186,12 @@ class Connection implements ConnectionInterface
     {
         $host              = $this->config['host'];
         $port              = $this->config['port'];
-        $connectionTimeout = $this->config['connection_timeout'];
+        $connectionTimeout = $this->config['connect_timeout'];
         $socket            = new Socket($host, $port, $connectionTimeout);
         try {
             $socket->open();
-        } catch (StreamStateException | OpenStreamException) {
-            throw new ConnectionException('Nsq connect failed.');
+        } catch (StreamStateException | OpenStreamException $exception) {
+            throw new ConnectionException($exception->getMessage(), $exception->getCode());
         }
         if (!$socket->write($this->builder->buildMagic())) {
             throw new ConnectionException('Nsq connect failed.');
@@ -196,7 +201,6 @@ class Connection implements ConnectionInterface
 
         $reader = new Subscriber($socket);
         $reader->recv();
-
         if (!$reader->isOk()) {
             $result = $reader->getJsonPayload();
             if (Arr::get($result, 'auth_required') === true) {

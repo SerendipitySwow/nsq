@@ -5,12 +5,13 @@ declare(strict_types = 1);
 namespace SerendipitySwow\Nsq;
 
 use Closure;
-use Psr\Log\LoggerInterface;
-use SerendipitySwow\Nsq\Exceptions\ConnectionException;
+use Serendipity\Job\Logger\Logger;
+use Serendipity\Job\Logger\LoggerFactory;
 use SerendipitySwow\Socket\Exceptions\WriteStreamException;
 use SerendipitySwow\Socket\Streams\Socket;
 use Psr\Container\ContainerInterface;
 use Throwable;
+use SerendipitySwow\Nsq\Exceptions\ConnectionException;
 
 class Nsq
 {
@@ -37,15 +38,16 @@ class Nsq
     protected mixed $builder;
 
     /**
-     * @var LoggerInterface
+     * @var Logger
      */
-    protected LoggerInterface $logger;
+    protected Logger $logger;
 
     public function __construct(ContainerInterface $container, array $nsqConfig)
     {
         $this->container = $container;
         $this->builder   = $container->get(MessageBuilder::class);
-        $this->logger    = $container->get(LoggerInterface::class);
+        $this->logger    = $container->get(LoggerFactory::class)
+                                     ->get();
         $this->nsqConfig = $nsqConfig ?? throw new \InvalidArgumentException('Nsq Config Unknow#');
     }
 
@@ -93,7 +95,7 @@ class Nsq
                             $result = $callback($message);
                         } catch (Throwable $throwable) {
                             $result = Result::DROP;
-                            $this->logger->error('Subscribe failed, ' . (string)$throwable);
+                            $this->logger->error('Subscribe failed, ' . $throwable);
                         }
 
                         if ($result === Result::REQUEUE) {
@@ -171,7 +173,7 @@ class Nsq
         if (!$result) {
             throw new WriteStreamException('SUB send failed, the errorMsg is ' . error_get_last());
         }
-        $socket->recv();
+        $socket->readChar();
     }
 
     protected function sendRdy(Socket $socket) : int

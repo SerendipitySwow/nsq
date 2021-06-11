@@ -180,7 +180,7 @@ class MessageBuilder
             return 'consumer-' . random_int(0, 9999);
         });
         $message  = json_encode([
-            'hostname'            => $hostname,
+            'hostname'            => $hostname(),
             'user_agent'          => 'swow-nsq/' . $version,
             'feature_negotiation' => true,
         ], JSON_THROW_ON_ERROR);
