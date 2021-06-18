@@ -131,7 +131,7 @@ class Connection implements ConnectionInterface
     public function isTimeout() : bool
     {
         return $this->lastUseTime < microtime(true) - $this->config['max_idle_time']
-            && $this->channel->length() > 0;
+            && $this->channel->getLength() > 0;
     }
 
     /**
