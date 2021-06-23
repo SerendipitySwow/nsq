@@ -166,7 +166,7 @@ class MessageBuilder
         return "CLS\n";
     }
 
-    public function buildIdentify() : string
+    public function buildIdentify(array $identity = []) : string
     {
         $command  = "IDENTIFY\n";
         $version  = Constant::VERSION;
@@ -179,11 +179,11 @@ class MessageBuilder
             }
             return 'consumer-' . random_int(0, 9999);
         });
-        $message  = json_encode([
+        $message  = json_encode(array_merge([
             'hostname'            => $hostname(),
             'user_agent'          => 'swow-nsq/' . $version,
             'feature_negotiation' => true,
-        ], JSON_THROW_ON_ERROR);
+        ], $identity), JSON_THROW_ON_ERROR);
         $size     = Packer::packUInt32(strlen($message));
         return $command . $size . $message;
     }
