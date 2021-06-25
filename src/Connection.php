@@ -197,7 +197,7 @@ class Connection implements ConnectionInterface
             throw new ConnectionException('Nsq connect failed.');
         }
 
-        $socket->write($this->builder->buildIdentify(['msg_timeout' => $this->config['msg_timeout'] ?? 60]));
+        $socket->write($this->builder->buildIdentify(['max_msg_timeout' => $this->config['max_msg_timeout'] ?? 60]));
 
         $reader = new Subscriber($socket);
         $reader->recv();
