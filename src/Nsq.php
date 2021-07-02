@@ -1,35 +1,30 @@
 <?php
+/**
+ * This file is part of Serendipity Job
+ * @license  https://github.com/serendipitySwow/Serendipity-job/blob/main/LICENSE
+ */
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace SerendipitySwow\Nsq;
 
 use Closure;
+use Psr\Container\ContainerInterface;
 use Serendipity\Job\Logger\Logger;
 use Serendipity\Job\Logger\LoggerFactory;
+use SerendipitySwow\Nsq\Exceptions\ConnectionException;
 use SerendipitySwow\Socket\Exceptions\WriteStreamException;
 use SerendipitySwow\Socket\Streams\Socket;
-use Psr\Container\ContainerInterface;
 use Throwable;
-use SerendipitySwow\Nsq\Exceptions\ConnectionException;
 
 class Nsq
 {
-    /**
-     * @var Socket
-     */
     protected Socket $socket;
 
-    /**
-     * @var Connection|null
-     */
     protected ?Connection $connection;
 
     protected array $nsqConfig = [];
 
-    /**
-     * @var ContainerInterface
-     */
     protected ContainerInterface $container;
 
     /**
@@ -37,17 +32,14 @@ class Nsq
      */
     protected mixed $builder;
 
-    /**
-     * @var Logger
-     */
     protected Logger $logger;
 
     public function __construct(ContainerInterface $container, array $nsqConfig)
     {
         $this->container = $container;
-        $this->builder   = $container->get(MessageBuilder::class);
-        $this->logger    = $container->get(LoggerFactory::class)
-                                     ->get();
+        $this->builder = $container->get(MessageBuilder::class);
+        $this->logger = $container->get(LoggerFactory::class)
+            ->get();
         $this->nsqConfig = $nsqConfig ?? throw new \InvalidArgumentException('Nsq Config Unknow#');
     }
 
@@ -56,13 +48,14 @@ class Nsq
      *
      * @throws Throwable
      */
-    public function publish(string $topic, array|string $message, float $deferTime = 0.0) : bool
+    public function publish(string $topic, array | string $message, float $deferTime = 0.0): bool
     {
         if (is_array($message)) {
             if ($deferTime > 0) {
                 foreach ($message as $value) {
                     $this->sendDPub($topic, $value, $deferTime);
                 }
+
                 return true;
             }
 
@@ -76,10 +69,9 @@ class Nsq
         return $this->sendPub($topic, $message);
     }
 
-    public function subscribe(string $topic, string $channel, callable $callback) : void
+    public function subscribe(string $topic, string $channel, callable $callback): void
     {
-        $this->call(function (Socket $socket) use ($topic, $channel, $callback)
-        {
+        $this->call(function (Socket $socket) use ($topic, $channel, $callback) {
             $this->sendSub($socket, $topic, $channel);
             while ($this->sendRdy($socket)) {
                 $reader = new Subscriber($socket);
@@ -90,7 +82,7 @@ class Nsq
                         $socket->write($this->builder->buildNop());
                     } else {
                         $message = $reader->getMessage();
-                        $result  = null;
+                        $result = null;
                         try {
                             $result = $callback($message);
                         } catch (Throwable $throwable) {
@@ -111,38 +103,49 @@ class Nsq
         });
     }
 
-    protected function sendMPub(string $topic, array $messages) : bool
+    protected function sendMPub(string $topic, array $messages): bool
     {
         $payload = $this->builder->buildMPub($topic, $messages);
-        return $this->call(function (Socket $socket) use ($payload)
-        {
-            if (!$socket->write($payload)) {
-                throw new ConnectionException('Payload send failed, the errorMsg is ' . error_get_last());
+
+        return $this->call(function (Socket $socket) use ($payload) {
+            try {
+                $socket->write($payload);
+
+                return true;
+            } catch (Throwable $exception) {
+                throw new ConnectionException('Payload send failed, the errorMsg is ' . $exception->getMessage() . ',line:' . $exception->getLine() . ',file:' . $exception->getFile());
             }
-            return true;
+
+            return false;
         });
     }
 
-    protected function sendPub(string $topic, string $message) : bool
+    protected function sendPub(string $topic, string $message): bool
     {
         $payload = $this->builder->buildPub($topic, $message);
-        return $this->call(function (Socket $socket) use ($payload)
-        {
-            if (!$socket->write($payload)) {
-                throw new ConnectionException('Payload send failed, the errorMsg is ' . error_get_last());
+
+        return $this->call(function (Socket $socket) use ($payload) {
+            try {
+                $socket->write($payload);
+
+                return true;
+            } catch (Throwable $exception) {
+                throw new ConnectionException('Payload send failed, the errorMsg is ' . $exception->getMessage() . ',line:' . $exception->getLine() . ',file:' . $exception->getFile());
             }
-            return true;
+
+            return false;
         });
     }
 
-    protected function sendDPub(string $topic, string $message, float $deferTime = 0.0) : bool
+    protected function sendDPub(string $topic, string $message, float $deferTime = 0.0): bool
     {
-        $payload = $this->builder->buildDPub($topic, $message, (int)($deferTime * 1000));
-        return $this->call(function (Socket $socket) use ($payload)
-        {
+        $payload = $this->builder->buildDPub($topic, $message, (int) ($deferTime * 1000));
+
+        return $this->call(function (Socket $socket) use ($payload) {
             if (!$socket->write($payload)) {
                 throw new ConnectionException('Payload send failed, the errorMsg is ' . error_get_last());
             }
+
             return true;
         });
     }
@@ -155,34 +158,38 @@ class Nsq
         } catch (Throwable $throwable) {
             $connection->close();
             throw $throwable;
-        }
-        finally {
+        } finally {
             $connection->release();
         }
     }
 
-    protected function makeConnection() : Connection
+    protected function makeConnection(): Connection
     {
         $this->connection = new Connection($this->container, $this->nsqConfig);
+
         return $this->connection;
     }
 
-    protected function sendSub(Socket $socket, string $topic, string $channel) : void
+    protected function sendSub(Socket $socket, string $topic, string $channel): void
     {
-        $result = $socket->write($this->builder->buildSub($topic, $channel));
-        if (!$result) {
-            throw new WriteStreamException('SUB send failed, the errorMsg is ' . error_get_last());
+        try {
+            $socket->write($this->builder->buildSub($topic, $channel));
+            $socket->readChar();
+        } catch (\Throwable $exception) {
+            throw new WriteStreamException('SUB send failed, the errorMsg:' . $exception->getMessage() . ',line: ' . $exception->getLine . ',file:' . $exception->getFile);
         }
-        $socket->readChar();
     }
 
-    protected function sendRdy(Socket $socket) : int
+    protected function sendRdy(Socket $socket): bool
     {
-        $result = $socket->write($this->builder->buildRdy(1));
-        if (!$result) {
-            throw new WriteStreamException('RDY send failed, the errorMsg is ' . error_get_last());
+        try {
+            $socket->write($this->builder->buildRdy(1));
+
+            return true;
+        } catch (\Throwable $exception) {
+            throw new WriteStreamException('RDY send failed, the errorMsg errorMsg:' . $exception->getMessage() . ',line: ' . $exception->getLine . ',file:' . $exception->getFile);
         }
 
-        return $result;
+        return false;
     }
 }

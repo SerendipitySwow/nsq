@@ -1,6 +1,10 @@
 <?php
+/**
+ * This file is part of Serendipity Job
+ * @license  https://github.com/serendipitySwow/Serendipity-job/blob/main/LICENSE
+ */
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace SerendipitySwow\Nsq;
 
@@ -15,7 +19,7 @@ class MessageBuilder
      * After connecting, a client must send a 4-byte “magic” identifier
      * indicating what version of the protocol they will be communicating.
      */
-    public function buildMagic() : string
+    public function buildMagic(): string
     {
         return '  V2';
     }
@@ -32,9 +36,9 @@ class MessageBuilder
     public function buildPub(
         string $topic,
         string $message
-    ) : string {
+    ): string {
         $command = "PUB {$topic}\n";
-        $size    = Packer::packUInt32(strlen($message));
+        $size = Packer::packUInt32(strlen($message));
 
         return $command . $size . $message;
     }
@@ -52,9 +56,9 @@ class MessageBuilder
     public function buildMPub(
         string $topic,
         array $messages
-    ) : string {
-        $command       = "MPUB {$topic}\n";
-        $numMessages   = Packer::packUInt32(count($messages));
+    ): string {
+        $command = "MPUB {$topic}\n";
+        $numMessages = Packer::packUInt32(count($messages));
         $packedMessage = '';
         foreach ($messages as $message) {
             $packedMessage .= Packer::packUInt32(strlen($message)) . $message;
@@ -77,18 +81,20 @@ class MessageBuilder
         string $topic,
         string $message,
         int $deferTime = 0
-    ) : string {
+    ): string {
         $command = "DPUB {$topic} {$deferTime}\n";
-        $size    = Packer::packUInt32(strlen($message));
+        $size = Packer::packUInt32(strlen($message));
+
         return $command . $size . $message;
     }
 
     #[Pure]
     public function buildAuth(
         string $identity
-    ) : string {
+    ): string {
         $command = "AUTH\n";
-        $size    = Packer::packUInt32(strlen($identity));
+        $size = Packer::packUInt32(strlen($identity));
+
         return $command . $size . $identity;
     }
 
@@ -99,7 +105,7 @@ class MessageBuilder
      *                  E_BAD_TOPIC
      *                  E_BAD_CHANNEL.
      */
-    public function buildSub(string $topic, string $channel) : string
+    public function buildSub(string $topic, string $channel): string
     {
         return "SUB {$topic} {$channel}\n";
     }
@@ -109,7 +115,7 @@ class MessageBuilder
      * There is no success response.
      * Error Responses: E_INVALID.
      */
-    public function buildRdy(int $count) : string
+    public function buildRdy(int $count): string
     {
         return "RDY {$count}\n";
     }
@@ -120,7 +126,7 @@ class MessageBuilder
      * Error Responses: E_INVALID
      *                  E_TOUCH_FAILED.
      */
-    public function buildTouch(string $id) : string
+    public function buildTouch(string $id): string
     {
         return "TOUCH {$id}\n";
     }
@@ -131,7 +137,7 @@ class MessageBuilder
      * Error Responses: E_INVALID
      *                  E_FIN_FAILED.
      */
-    public function buildFin(string $id) : string
+    public function buildFin(string $id): string
     {
         return "FIN {$id}\n";
     }
@@ -142,7 +148,7 @@ class MessageBuilder
      * Error Responses: E_INVALID
      *                  E_REQ_FAILED.
      */
-    public function buildReq(string $id, int $timeout = 1) : string
+    public function buildReq(string $id, int $timeout = 1): string
     {
         return "REQ {$id} {$timeout}\n";
     }
@@ -151,7 +157,7 @@ class MessageBuilder
      * No-op.
      * There is no response.
      */
-    public function buildNop() : string
+    public function buildNop(): string
     {
         return "NOP\n";
     }
@@ -161,30 +167,31 @@ class MessageBuilder
      * Success Responses: CLOSE_WAIT
      * Error Responses: E_INVALID.
      */
-    public function buildCls() : string
+    public function buildCls(): string
     {
         return "CLS\n";
     }
 
-    public function buildIdentify(array $identity = []) : string
+    public function buildIdentify(array $identity = []): string
     {
-        $command  = "IDENTIFY\n";
-        $version  = Constant::VERSION;
-        $hostname = (static function ()
-        {
+        $command = "IDENTIFY\n";
+        $version = Constant::VERSION;
+        $hostname = (static function () {
             /** @var mixed|string $ip */
             $ip = gethostbyname(gethostname());
             if (is_string($ip)) {
                 return $ip;
             }
+
             return 'consumer-' . random_int(0, 9999);
         });
-        $message  = json_encode(array_merge([
-            'hostname'            => $hostname(),
-            'user_agent'          => 'swow-nsq/' . $version,
+        $message = json_encode(array_merge([
+            'hostname' => $hostname(),
+            'user_agent' => 'swow-nsq/' . $version,
             'feature_negotiation' => true,
         ], $identity), JSON_THROW_ON_ERROR);
-        $size     = Packer::packUInt32(strlen($message));
+        $size = Packer::packUInt32(strlen($message));
+
         return $command . $size . $message;
     }
 }

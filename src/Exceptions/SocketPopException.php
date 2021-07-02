@@ -1,11 +1,15 @@
 <?php
-declare(strict_types = 1);
+/**
+ * This file is part of Serendipity Job
+ * @license  https://github.com/serendipitySwow/Serendipity-job/blob/main/LICENSE
+ */
+
+declare(strict_types=1);
 
 namespace SerendipitySwow\Nsq\Exceptions;
 
 use RuntimeException;
 
-class  SocketPopException extends RuntimeException
+class SocketPopException extends RuntimeException
 {
-
 }
