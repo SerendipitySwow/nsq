@@ -115,8 +115,6 @@ class Nsq
             } catch (Throwable $exception) {
                 throw new ConnectionException('Payload send failed, the errorMsg is ' . $exception->getMessage() . ',line:' . $exception->getLine() . ',file:' . $exception->getFile());
             }
-
-            return false;
         });
     }
 
@@ -132,8 +130,6 @@ class Nsq
             } catch (Throwable $exception) {
                 throw new ConnectionException('Payload send failed, the errorMsg is ' . $exception->getMessage() . ',line:' . $exception->getLine() . ',file:' . $exception->getFile());
             }
-
-            return false;
         });
     }
 
@@ -142,11 +138,13 @@ class Nsq
         $payload = $this->builder->buildDPub($topic, $message, (int) ($deferTime * 1000));
 
         return $this->call(function (Socket $socket) use ($payload) {
-            if (!$socket->write($payload)) {
-                throw new ConnectionException('Payload send failed, the errorMsg is ' . error_get_last());
-            }
+            try {
+                $socket->write($payload);
 
-            return true;
+                return true;
+            } catch (\Exception $e) {
+                throw new ConnectionException('Payload send failed, the errorMsg is ' . $e->getMessage());
+            }
         });
     }
 
@@ -189,7 +187,5 @@ class Nsq
         } catch (\Throwable $exception) {
             throw new WriteStreamException('RDY send failed, the errorMsg errorMsg:' . $exception->getMessage() . ',line: ' . $exception->getLine . ',file:' . $exception->getFile);
         }
-
-        return false;
     }
 }
