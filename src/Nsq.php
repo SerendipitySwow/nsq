@@ -174,7 +174,7 @@ class Nsq
             $socket->write($this->builder->buildSub($topic, $channel));
             $socket->readChar();
         } catch (\Throwable $exception) {
-            throw new WriteStreamException('SUB send failed, the errorMsg:' . $exception->getMessage() . ',line: ' . $exception->getLine . ',file:' . $exception->getFile);
+            throw new WriteStreamException('SUB send failed, the errorMsg:' . $exception->getMessage() . ',line: ' . $exception->getLine() . ',file:' . $exception->getFile);
         }
     }
 
@@ -185,7 +185,7 @@ class Nsq
 
             return true;
         } catch (\Throwable $exception) {
-            throw new WriteStreamException('RDY send failed, the errorMsg errorMsg:' . $exception->getMessage() . ',line: ' . $exception->getLine . ',file:' . $exception->getFile);
+            throw new WriteStreamException('RDY send failed, the errorMsg errorMsg:' . $exception->getMessage() . ',line: ' . $exception->getLine() . ',file:' . $exception->getFile);
         }
     }
 }
