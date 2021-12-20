@@ -14,7 +14,7 @@ use JetBrains\PhpStorm\Pure;
 use Psr\Container\ContainerInterface;
 use Serendipity\Job\Logger\Logger;
 use Serendipity\Job\Logger\LoggerFactory;
-use Serendipity\Job\Util\Arr;
+use Hyperf\Utils\Arr;
 use SerendipitySwow\Nsq\Exceptions\ConnectionException;
 use SerendipitySwow\Nsq\Exceptions\SocketPopException;
 use SerendipitySwow\Nsq\Interface\ConnectionInterface;
