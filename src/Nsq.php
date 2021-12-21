@@ -10,8 +10,8 @@ namespace SwowCloud\Nsq;
 
 use Closure;
 use Psr\Container\ContainerInterface;
-use Serendipity\Job\Logger\Logger;
-use Serendipity\Job\Logger\LoggerFactory;
+use SwowCloud\Job\Logger\Logger;
+use SwowCloud\Job\Logger\LoggerFactory;
 use SwowCloud\Nsq\Exceptions\ConnectionException;
 use SwowCloud\Socket\Exceptions\WriteStreamException;
 use SwowCloud\Socket\Streams\Socket;
