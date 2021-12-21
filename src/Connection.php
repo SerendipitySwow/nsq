@@ -1,28 +1,28 @@
 <?php
 /**
- * This file is part of Serendipity Job
- * @license  https://github.com/serendipitySwow/Serendipity-job/blob/main/LICENSE
+ * This file is part of Swow
+ * @license  https://github.com/swow-cloud/nsq/blob/main/LICENSE
  */
 
 declare(strict_types=1);
 
-namespace SerendipitySwow\Nsq;
+namespace SwowCloud\Nsq;
 
 use Closure;
+use Hyperf\Utils\Arr;
 use InvalidArgumentException;
 use JetBrains\PhpStorm\Pure;
 use Psr\Container\ContainerInterface;
 use Serendipity\Job\Logger\Logger;
 use Serendipity\Job\Logger\LoggerFactory;
-use Hyperf\Utils\Arr;
-use SerendipitySwow\Nsq\Exceptions\ConnectionException;
-use SerendipitySwow\Nsq\Exceptions\SocketPopException;
-use SerendipitySwow\Nsq\Interface\ConnectionInterface;
-use SerendipitySwow\Socket\Exceptions\OpenStreamException;
-use SerendipitySwow\Socket\Exceptions\StreamStateException;
-use SerendipitySwow\Socket\Streams\Socket;
 use Swow\Channel;
 use Swow\Coroutine;
+use SwowCloud\Nsq\Exceptions\ConnectionException;
+use SwowCloud\Nsq\Exceptions\SocketPopException;
+use SwowCloud\Nsq\Interface\ConnectionInterface;
+use SwowCloud\Socket\Exceptions\OpenStreamException;
+use SwowCloud\Socket\Exceptions\StreamStateException;
+use SwowCloud\Socket\Streams\Socket;
 
 class Connection implements ConnectionInterface
 {

@@ -1,20 +1,20 @@
 <?php
 /**
- * This file is part of Serendipity Job
- * @license  https://github.com/serendipitySwow/Serendipity-job/blob/main/LICENSE
+ * This file is part of Swow
+ * @license  https://github.com/swow-cloud/nsq/blob/main/LICENSE
  */
 
 declare(strict_types=1);
 
-namespace SerendipitySwow\Nsq;
+namespace SwowCloud\Nsq;
 
 use Closure;
 use Psr\Container\ContainerInterface;
 use Serendipity\Job\Logger\Logger;
 use Serendipity\Job\Logger\LoggerFactory;
-use SerendipitySwow\Nsq\Exceptions\ConnectionException;
-use SerendipitySwow\Socket\Exceptions\WriteStreamException;
-use SerendipitySwow\Socket\Streams\Socket;
+use SwowCloud\Nsq\Exceptions\ConnectionException;
+use SwowCloud\Socket\Exceptions\WriteStreamException;
+use SwowCloud\Socket\Streams\Socket;
 use Throwable;
 
 class Nsq

@@ -3,8 +3,8 @@
 declare(strict_types=1);
 
 $header = <<<'EOF'
-This file is part of Serendipity Job
-@license  https://github.com/serendipitySwow/Serendipity-job/blob/main/LICENSE
+This file is part of Swow
+@license  https://github.com/swow-cloud/nsq/blob/main/LICENSE
 EOF;
 
 return (new PhpCsFixer\Config())

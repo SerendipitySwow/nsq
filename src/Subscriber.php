@@ -1,15 +1,15 @@
 <?php
 /**
- * This file is part of Serendipity Job
- * @license  https://github.com/serendipitySwow/Serendipity-job/blob/main/LICENSE
+ * This file is part of Swow
+ * @license  https://github.com/swow-cloud/nsq/blob/main/LICENSE
  */
 
 declare(strict_types=1);
 
-namespace SerendipitySwow\Nsq;
+namespace SwowCloud\Nsq;
 
 use JetBrains\PhpStorm\Pure;
-use SerendipitySwow\Socket\Streams\Socket;
+use SwowCloud\Socket\Streams\Socket;
 
 class Subscriber
 {

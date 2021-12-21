@@ -29,19 +29,19 @@
   },
   "autoload": {
     "psr-4": {
-      "SerendipitySwow\\Nsq\\": "src/"
+      "SwowCloud\\Nsq\\": "src/"
     }
   },
   "autoload-dev": {
     "psr-4": {
-      "SerendipitySwowTest\\Nsq\\": "tests/"
+      "SwowCloud\\NsqTest\\": "tests/"
     }
   },
   "scripts": {
     "cs-fix": [ "@php vendor/bin/php-cs-fixer fix" ]
   },
   "support": {
-    "pull-request": "https://github.com/SerendipitySwow/nsq-nsq/pulls",
-    "issues": "https://github.com/SerendipitySwow/nsq-nsq/issues"
+    "pull-request": "https://github.com/swow-cloud/nsq-nsq/pulls",
+    "issues": "https://github.com/swow-cloud/nsq-nsq/issues"
   }
 }
