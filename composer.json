@@ -1,5 +1,5 @@
 {
-  "name": "serendipity-swow/nsq",
+  "name": "swow-cloud/nsq",
   "type": "library",
   "description": "Development of nsq client based on swow",
   "keywords": [
